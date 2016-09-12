@@ -1,5 +1,7 @@
 import time, JSON, datetime
 
+class ShellMenu():
+
     def programBanner(self):
         print "**************************************************************************************"
         print "**************************Mike's Sprinkler System Program*****************************"
@@ -17,5 +19,5 @@ import time, JSON, datetime
         elif sel == 3: self.makeSchedule()
         elif sel == 4: self.close()
         else:
-          print "Invalid selection. Select 1 through 4"
+          print "Fuck you. Select 1 through 4"
           self.mainMenu()
