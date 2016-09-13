@@ -41,3 +41,15 @@ class SprinklerSystem():
     def TurnAutoOff(self):
         self.auto = False
         #update status.json
+
+    def ManualModeOn(self, zone, minutes):
+        now = time.localtime()
+        finish = time.localtime() + 60*minutes
+        while now < finish:
+          GPIO.output(self.pumpPin, GPIO.HIGH)
+          GPIO.output(zone, GPIO.HIGH)
+          now = time.localtime()
+          time.sleep(1)
+          #update status.json
+        GPIO.output(self.pumpPin, GPIO.LOW)
+        GPIO.output(zone, GPIO.LOW)
