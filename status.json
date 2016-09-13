@@ -1,1 +1,1 @@
-{"control": "Manual", "pump": "Off", "zone": None, "NextOnTime" = None}
+'{"control": "Manual", "pump": false, "zone": "None", "NextOnTime": "None"}'
