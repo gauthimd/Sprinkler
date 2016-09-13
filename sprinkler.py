@@ -14,8 +14,8 @@ class SprinklerSystem():
         self.zone6Pin = 16 #Board 36
         self.zone7Pin = 20 #Board 38
         #initialize GPIO
+        GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
-        GPIO.cleanup()
         GPIO.setup(self.pumpPin, GPIO.OUT)
         GPIO.setup(self.zone1Pin, GPIO.OUT)
         GPIO.setup(self.zone2Pin, GPIO.OUT)
@@ -33,3 +33,11 @@ class SprinklerSystem():
         GPIO.output(self.zone6Pin, GPIO.LOW)
         GPIO.output(self.zone7Pin, GPIO.LOW)
 	#todo: init status json object and write to status.json
+
+    def TurnAutoOn(self):
+        self.auto = True
+        #update status.json
+
+    def TurnAutoOff(self):
+        self.auto = False
+        #update status.json
