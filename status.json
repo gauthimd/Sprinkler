@@ -1,1 +1,1 @@
-{"control": "manual", "zones": null, "pump": false, "ontime": null}
+{"control": "manual", "zones": [[1, 1]], "pump": false, "ontime": null}

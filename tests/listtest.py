@@ -5,3 +5,9 @@ for x in l: print x
 if all(isinstance(x, int) for x in l): print "Ringadingdingmuthafucka"
 li = [[22,4],[13,5],[20,3]]
 if all(isinstance(x, list) for x in li): print "Yippykyaymuthafucka"
+s = []
+print s
+s.append([1,5])
+print s
+s.append([2,20])
+print s
