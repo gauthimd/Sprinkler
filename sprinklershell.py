@@ -6,40 +6,59 @@ class ShellMenu():
 
     def ProgramBanner(self):
 	os.system('clear')
-        print "**************************************************************************************"
-        print "**************************Mike's Sprinkler System Program*****************************"
-        print "--------------------------------------------------------------------------------------"
+        print "****************************************************************************************"
+        print "****************************Mike's Sprinkler System Program*****************************"
+        print "----------------------------------------------------------------------------------------"
 	time.sleep(1)
 
     def MainMenu(self):
-        print "--------------------------------------Main Menu---------------------------------------"
-        print "1 Manual Mode"
+	self.ProgramBanner()
+	print "----------------------------------------Main Menu---------------------------------------"
+	self.CurrentStatus()
+	print "1 Manual Mode"
         print "2 Turn Auto Mode On/Off"
         print "3 Create Schedule"
         print "4 Quit"
-        sel = raw_input("Please choose 1 through 4 and press Enter\n")
+        sel = raw_input("\nPlease choose 1 through 4 and press Enter\n> ")
 	try:
-	 sel = int(sel)
-         if sel == 1: print 'Yeah!'
-         elif sel == 2: print 'What?!'
-         elif sel == 3: print 'OK!'
-         elif sel == 4: self.close()
-         else:
-	   self.fuckyou()
-           self.MainMenu()
+          sel = int(sel)
+          if sel == 1: print 'Yeah!'
+          elif sel == 2: 
+	    self.AutoOnOff()
+	    self.MainMenu()
+          elif sel == 3: print 'OK!'
+          elif sel == 4: self.close()
+	  else:
+	    self.fuckyou()
+	    self.MainMenu()
 	except:
-	 self.fuckyou()
-	 self.MainMenu()
+	  self.fuckyou()
+	  self.MainMenu()
+
+    def CurrentStatus(self):
+        read = SprinklerHelper()
+	read.ReadStatusJSON()
+	now = datetime.datetime.now()
+	print "\nCurrent Status:    | Control Mode: ", read.control, "| Pump: ", read.pump, "| Zone: ", read.zones, "| On time: ", read.ontime, "|\n"
+        print "\nCurrent Time:    ", now.ctime(), "\n"
+	if read.control == "auto":
+	  read.ReadScheduleJSON()
+	  hour, minute = read.ontime[0], read.ontime[1]
+	  print "Scheduled On Time:    ", hour, ":", minute, "\n"
 
     def AutoOnOff(self):
 	read = SprinklerHelper()
 	read.ReadStatusJSON()
-	if read.control == "auto":
-	   print "Auto is currently turned on. Would you like to turn it off?\n"
-	   turnon = raw_input("Enter y or n > ")
-	   if turnon == 'y':
-	      print "holla"	
-	      
+	pump = read.pump
+	zones = read.zones
+	ontime = read.ontime
+	if read.control ==  "auto":
+	  control = "manual"
+	  read.WriteStatusJSON(control, pump, zones, ontime)
+	else:
+	  control = "auto"
+	  read.WriteStatusJSON(control, pump,zones, ontime)
+
     def fuckyou(self):
 	os.system('clear')
 	print """
@@ -61,5 +80,4 @@ class ShellMenu():
 
 if __name__=="__main__":
 	shelly = ShellMenu()
-	shelly.ProgramBanner()
 	shelly.MainMenu()

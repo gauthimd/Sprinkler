@@ -21,8 +21,11 @@ class SprinklerSystem():
         finish = now + 60*minutes
 	pin = self.zonedict.get(zone)
         GPIO.output(pin, GPIO.HIGH)
+	nowtime = datetime.datetime.now
+	hour, min = nowtime.hour, nowtime.minute
+	ontime = [hour, min]
 	write = SprinklerHelper()
-	write.WriteStatusJSON(control, pump, zone, None)
+	write.WriteStatusJSON(control, pump, zone, ontime)
 	while now < finish:
           now = time.time()
           time.sleep(1)
