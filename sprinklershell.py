@@ -9,12 +9,14 @@ class ShellMenu():
         print "*********************************************************************************************"
         print "*******************************Mike's Sprinkler System Program*******************************"
         print "---------------------------------------------------------------------------------------------"
-	time.sleep(2)
+	time.sleep(1)
 
     def MainMenu(self):
 	self.ProgramBanner()
 	print "-------------------------------------------Main Menu-----------------------------------------"
+	time.sleep(1)
 	self.CurrentStatus()
+	time.sleep(1)
 	print "\n1 Manual Mode"
         print "2 Turn Auto Mode On/Off"
         print "3 Create Schedule"
@@ -36,12 +38,10 @@ class ShellMenu():
 	    self.MainMenu()
 	  elif a == 4: self.MainMenu()
           elif a == 5: self.close()
-	  else:
-	    self.fuckyou()
-	    self.MainMenu()
 	else:
 	  self.fuckyou()
 	  self.MainMenu()
+
     def CurrentStatus(self):
         read = SprinklerHelper()
 	read.ReadStatusJSON()
@@ -50,14 +50,14 @@ class ShellMenu():
 	else: ontime = read.ontime
 	if read.pump == True: pump = 'On'
 	else: pump = 'Off'
-	print "\nCurrent Status:    | Control Mode: ", read.control, "| Pump: ", pump, "| Zone: ", read.zones, "| On time: ", ontime, "|\n"
+	print "\nCurrent Status:    | Control Mode: ", read.control, "| Pump: ", pump, "| Zone: ", read.zones, "| On time: ", ontime, "|"
 	now = datetime.datetime.now()
         print "\nCurrent Date/Time:\t\t", now.ctime()
 	if read.control == "Auto":
 	  read.ReadScheduleJSON()
 	  hour, minute = read.ontime[0], read.ontime[1]
 	  print "\nScheduled On Time:\t\t", "{0}:{1}".format('%02d' % hour, '%02d' % minute)
-	  print "\nScheduled [[Zone, Minutes]]:\t", read.zones, "\n"
+	  print "\nScheduled [[Zone, Minutes]]:\t", read.zones
 
     def AutoOnOff(self):
 	read = SprinklerHelper()
