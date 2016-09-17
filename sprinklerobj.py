@@ -16,14 +16,18 @@ class SprinklerSystem():
          GPIO.setup(x, GPIO.OUT)
          GPIO.output(x, GPIO.LOW)
 
-    def TurnZoneOn(self, zone, minutes, control, pump):
+    def TurnZoneOn(self, zone, minutes, pump):
 	now = time.time()
         finish = now + 60*minutes
 	pin = self.zonedict.get(zone)
         GPIO.output(pin, GPIO.HIGH)
-	nowtime = datetime.datetime.now
-	hour, min = nowtime.hour, nowtime.minute
+	nowtime = datetime.datetime.now()
+	hour = nowtime.hour
+	min = nowtime.minute
 	ontime = [hour, min]
+	read = SprinklerHelper()
+	read.ReadStatusJSON()
+	control = read.control
 	write = SprinklerHelper()
 	write.WriteStatusJSON(control, pump, zone, ontime)
 	while now < finish:
@@ -34,21 +38,24 @@ class SprinklerSystem():
     def RunProgram(self, zones, control):
         GPIO.output(self.pumpPin, GPIO.HIGH)
 	pump = True
+	write = SprinklerHelper()
+	write.WriteStatusJSON(control, pump, zones, None)
 	if all(isinstance(x, int) for x in zones):
 	  zone = zones[0]
 	  minutes = zones[1]
-	  self.TurnZoneOn(zone, minutes, control, pump)	  
+	  self.TurnZoneOn(zone, minutes, pump)	  
 	elif all(isinstance(x, list) for x in zones):
 	  for x in zones:
 	   y = x
            zone = y[0]
 	   minutes = y[1]
-	   self.TurnZoneOn(zone, minutes, control, pump)
+	   self.TurnZoneOn(zone, minutes, pump)
         GPIO.output(self.pumpPin, GPIO.LOW)
 	pump = False
 	zones = None 
 	ontime = None
-	write = SprinklerHelper()
+	write.ReadStatusJSON()
+	control = write.control
 	write.WriteStatusJSON(control, pump, zones, None)
 
     def Run(self):
@@ -56,11 +63,11 @@ class SprinklerSystem():
 	  read = SprinklerHelper()
 	  read.ReadStatusJSON()
 	  control = read.control
-	  if control == "start":
+	  if control == "Start":
 	      zones = read.zones
-	      control = "manual"
+	      control = "Manual"
 	      self.RunProgram(zones, control)
-	  elif control == "auto":
+	  elif control == "Auto":
 	      read.ReadScheduleJSON()
 	      now = datetime.datetime.now()
 	      today = datetime.date.isoweekday(now)

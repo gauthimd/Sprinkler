@@ -9,45 +9,54 @@ class ShellMenu():
         print "*********************************************************************************************"
         print "*******************************Mike's Sprinkler System Program*******************************"
         print "---------------------------------------------------------------------------------------------"
-	time.sleep(1)
+	time.sleep(2)
 
     def MainMenu(self):
 	self.ProgramBanner()
 	print "-------------------------------------------Main Menu-----------------------------------------"
 	self.CurrentStatus()
-	print "1 Manual Mode"
+	print "\n1 Manual Mode"
         print "2 Turn Auto Mode On/Off"
         print "3 Create Schedule"
-        print "4 Quit"
-        sel = raw_input("\nPlease choose 1 through 4 and press Enter\n> ")
+	print "4 Update Status"
+        print "5 Quit"
+        sel = raw_input("\nPlease choose 1 through 5 and press Enter\n> ")
 	try:
           sel = int(sel)
-          if sel == 1:
-	    self.ManualMode()
-	    self.MainMenu()
-          elif sel == 2: 
-	    self.AutoOnOff()
-	    self.MainMenu()
-          elif sel == 3: print 'OK!'
-          elif sel == 4: self.close()
-	  else:
-	    self.fuckyou()
-	    self.MainMenu()
 	except:
+	  self.fuckyou()
+	  self.MainMenu()
+        if sel == 1:
+	  self.ManualMode()
+	  self.MainMenu()
+        elif sel == 2: 
+	  self.AutoOnOff()
+	  self.MainMenu()
+        elif sel == 3: 
+	  self.ScheduleMode()
+	  self.MainMenu()
+	elif sel == 4: self.MainMenu()
+        elif sel == 5: self.close()
+	else:
 	  self.fuckyou()
 	  self.MainMenu()
 
     def CurrentStatus(self):
         read = SprinklerHelper()
 	read.ReadStatusJSON()
+	if read.ontime != None:
+	  ontime = '{0}:{1}'.format('%02d' % read.hour, '%02d' % read.minute)
+	else: ontime = read.ontime
+	if read.pump == True: pump = 'On'
+	else: pump = 'Off'
+	print "\nCurrent Status:    | Control Mode: ", read.control, "| Pump: ", pump, "| Zone: ", read.zones, "| On time: ", ontime, "|\n"
 	now = datetime.datetime.now()
-	print "\nCurrent Status:    | Control Mode: ", read.control, "| Pump: ", read.pump, "| Zone: ", read.zones, "| On time: ", read.ontime, "|\n"
-        print "\nCurrent Time:    ", now.ctime(), "\n"
-	if read.control == "auto":
+        print "\nCurrent Date/Time:\t\t", now.ctime()
+	if read.control == "Auto":
 	  read.ReadScheduleJSON()
 	  hour, minute = read.ontime[0], read.ontime[1]
-	  print "Scheduled On Time:\t", hour, ":", minute, "\n"
-	  print "Scheduled Zones:\t", read.zones, "\n"
+	  print "\nScheduled On Time:\t\t", "{0}:{1}".format('%02d' % hour, '%02d' % minute)
+	  print "\nScheduled [[Zone, Minutes]]:\t", read.zones, "\n"
 
     def AutoOnOff(self):
 	read = SprinklerHelper()
@@ -55,17 +64,26 @@ class ShellMenu():
 	pump = read.pump
 	zones = read.zones
 	ontime = read.ontime
-	if read.control ==  "auto":
-	  control = "manual"
+	if read.control ==  "Auto":
+	  control = "Manual"
 	  read.WriteStatusJSON(control, pump, zones, ontime)
 	else:
-	  control = "auto"
+	  control = "Auto"
 	  read.WriteStatusJSON(control, pump, zones, ontime)
+
+    def ScheduleMode(self):
+	pass
 
     def ManualMode(self):
 	zones = []
-	done = False
-	while not done:
+	read = SprinklerHelper()
+	read.ReadStatusJSON()
+	old = read.zones
+	control = read.control
+	pump = read.pump
+	ontime = read.ontime
+	min = 'd'
+	while True:
   	  print "\nWhat zone would you like to turn on?\n"
 	  pick = raw_input('Enter 1 through 7 > ')
 	  try:
@@ -86,20 +104,23 @@ class ShellMenu():
 	  except:
   	    self.fuckyou()
 	    break
-	  zone = [pick, min]
-	  print zone
 	  zones.append([pick,min])
 	  print zones
 	  print "\nPick another zone?\n"
 	  query = raw_input('Enter y or n > ')
 	  if query == 'y': continue
 	  else: break
-	print zones
-	if zones != []: control = "start"
-	else: control = "manual"
-	time.sleep(2)
+	if isinstance(min, int): 
+	  control = "Start"
+	  now = datetime.datetime.now()
+	  hour = int(now.hour)
+	  minute = int(now.minute)
+	  ontime = [hour, minute]
+	else: 
+	  zones = old
 	write = SprinklerHelper()
-	write.WriteStatusJSON(control, False, zones, None)	
+	write.WriteStatusJSON(control, pump, zones, ontime)	
+	time.sleep(3)
 
     def fuckyou(self):
 	os.system('clear')

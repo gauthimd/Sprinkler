@@ -16,6 +16,9 @@ class SprinklerHelper():
 	self.zones = data["zones"]
 	self.pump = data["pump"]
 	self.ontime = data["ontime"]
+	if self.ontime != None:
+	  self.hour = self.ontime[0]
+	  self.minute = self.ontime[1]
 
     def ReadScheduleJSON(self):
 	with open('schedule.json') as infile:

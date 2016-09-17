@@ -1,10 +1,11 @@
-import datetime
-now = datetime.datetime.now()
-day = datetime.date.isoweekday(now)
+import datetime, time
+day = datetime.datetime.now()
+day = datetime.date.isoweekday(day)
 today = datetime.date.today()
-print now
-print now.day
-print now.hour
 print day
 print today
-print now.ctime()
+now = time.localtime()
+t = time.strftime('%H:%M', now)
+print t
+n = datetime.datetime.now()
+print n.hour, n.minute
