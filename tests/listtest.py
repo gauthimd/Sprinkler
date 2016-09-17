@@ -11,3 +11,6 @@ s.append([1,5])
 print s
 s.append([2,20])
 print s
+dick = {1:"Monday", 2:"Tuesday"}
+for x in dick:
+  print dick[x]

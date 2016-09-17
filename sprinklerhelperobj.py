@@ -31,3 +31,8 @@ class SprinklerHelper():
 	self.zones = sched["zones"]
 	return sched
 
+    def WriteScheduleJSON(self, weekdays, ontime, zones):
+	update = {"weekdays": weekdays, "ontime": ontime, "zones": zones}
+	with open('schedule.json', 'w') as outfile:
+	  json.dump(update, outfile)
+	outfile.close()
