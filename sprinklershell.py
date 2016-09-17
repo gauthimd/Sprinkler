@@ -22,25 +22,26 @@ class ShellMenu():
         print "5 Quit"
         sel = raw_input("\nPlease choose 1 through 5 and press Enter\n> ")
 	try:
-          sel = int(sel)
-	except:
-	  self.fuckyou()
-	  self.MainMenu()
-        if sel == 1:
-	  self.ManualMode()
-	  self.MainMenu()
-        elif sel == 2: 
-	  self.AutoOnOff()
-	  self.MainMenu()
-        elif sel == 3: 
-	  self.ScheduleMode()
-	  self.MainMenu()
-	elif sel == 4: self.MainMenu()
-        elif sel == 5: self.close()
+	  a = int(sel)
+	except: a = 0
+	if 1 <= a <= 5:
+          if a == 1:
+	    self.ManualMode()
+	    self.MainMenu()
+          elif a == 2: 
+	    self.AutoOnOff()
+	    self.MainMenu()
+          elif a == 3: 
+	    self.ScheduleMode()
+	    self.MainMenu()
+	  elif a == 4: self.MainMenu()
+          elif a == 5: self.close()
+	  else:
+	    self.fuckyou()
+	    self.MainMenu()
 	else:
 	  self.fuckyou()
 	  self.MainMenu()
-
     def CurrentStatus(self):
         read = SprinklerHelper()
 	read.ReadStatusJSON()
@@ -105,7 +106,7 @@ class ShellMenu():
   	    self.fuckyou()
 	    break
 	  zones.append([pick,min])
-	  print zones
+	  print "\nZones: ", zones
 	  print "\nPick another zone?\n"
 	  query = raw_input('Enter y or n > ')
 	  if query == 'y': continue
