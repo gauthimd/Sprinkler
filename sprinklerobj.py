@@ -14,13 +14,13 @@ class SprinklerSystem():
         GPIO.setmode(GPIO.BCM)
 	for x in self.l:
          GPIO.setup(x, GPIO.OUT)
-         GPIO.output(x, GPIO.LOW)
+         GPIO.output(x, GPIO.HIGH)
 
     def TurnZoneOn(self, zone, minutes, pump):
 	now = time.time()
         finish = now + 60*minutes
 	pin = self.zonedict.get(zone)
-        GPIO.output(pin, GPIO.HIGH)
+        GPIO.output(pin, GPIO.LOW)
 	nowtime = datetime.datetime.now()
 	hour = nowtime.hour
 	min = nowtime.minute
@@ -33,10 +33,10 @@ class SprinklerSystem():
 	while now < finish:
           now = time.time()
           time.sleep(1)
-        GPIO.output(pin, GPIO.LOW)
+        GPIO.output(pin, GPIO.HIGH)
 
     def RunProgram(self, zones, control):
-        GPIO.output(self.pumpPin, GPIO.HIGH)
+        GPIO.output(self.pumpPin, GPIO.LOW)
 	pump = True
 	write = SprinklerHelper()
 	write.WriteStatusJSON(control, pump, zones, None)
@@ -50,7 +50,7 @@ class SprinklerSystem():
            zone = y[0]
 	   minutes = y[1]
 	   self.TurnZoneOn(zone, minutes, pump)
-        GPIO.output(self.pumpPin, GPIO.LOW)
+        GPIO.output(self.pumpPin, GPIO.HIGH)
 	pump = False
 	zones = None 
 	ontime = None

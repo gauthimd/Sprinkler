@@ -160,10 +160,10 @@ class ShellMenu():
 	    self.fuckyou()
 	    break
 	  print "\nHow many minutes would you like it to come on for?"
-	  min = raw_input("Enter 1 though 60 > ")
+	  min = raw_input("Enter 1 though 90 > ")
 	  try:
 	    min = int(min)
-	    if not 1 <= min <= 60:
+	    if not 1 <= min <= 90:
 	      self.fuckyou()
 	      break
 	  except:
