@@ -6,6 +6,13 @@ class ShellMenu():
 
     def __init__(self):
 	self.daydict = {1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"}
+	self.pick = 0
+	read = SprinklerHelper()
+	read.ReadStatusJSON()
+	self.control = read.control
+	self.pump = read.pump
+	self.ontime = read.ontime
+	self.zones = read.zones
 
     def ProgramBanner(self):
 	os.system('clear')
@@ -51,8 +58,12 @@ class ShellMenu():
 	if read.ontime != None:
 	  ontime = '{0}:{1}'.format('%02d' % read.hour, '%02d' % read.minute)
 	else: ontime = read.ontime
-	if read.pump == True: pump = 'On'
-	else: pump = 'Off'
+	if read.pump == True: 
+	  pump = 'On'
+	  self.pump = True
+	else: 
+	  pump = 'Off'
+	  self.pump = False
 	print "\nCurrent Status:\t\t\t| Control Mode: ", read.control, "| Pump: ", pump, "| Zone: ", read.zones, "| On time: ", ontime, "|"
 	now = datetime.datetime.now()
         print "\nCurrent Date/Time:\t\t", now.ctime()
@@ -68,51 +79,46 @@ class ShellMenu():
     def AutoOnOff(self):
 	read = SprinklerHelper()
 	read.ReadStatusJSON()
-	pump = read.pump
-	zones = read.zones
-	ontime = read.ontime
-	if read.control ==  "Auto":
-	  control = "Manual"
-	  read.WriteStatusJSON(control, pump, zones, ontime)
+	self.pump = read.pump
+	self.zones = read.zones
+	self.ontime = read.ontime
+	self.control = read.control
+	if self.control ==  "Auto":
+	  self.control = "Manual"
+	  read.WriteStatusJSON(self.control, self.pump, self.zones, self.ontime)
 	else:
-	  control = "Auto"
-	  read.WriteStatusJSON(control, pump, zones, ontime)
+	  self.control = "Auto"
+	  read.WriteStatusJSON(self.control, self.pump, self.zones, self.ontime)
 
     def ScheduleMode(self):
 	read = SprinklerHelper()
 	read.ReadScheduleJSON()
 	oldsched = read.weekdays
 	self.day = []
+	print "\nPick a day of the week you would like the sprinkler to turn on."
+	self.wkday = raw_input("Enter 1 through 7 (1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday)\n> ")
 	while True:
-	  print "\nPick a day of the week you would like the sprinkler to turn on."
-	  day = raw_input("Enter 1 through 7 (1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday)\n> ")
 	  try:
-	    day = int(day)
-	    if not 1 <= day <= 7:
+	    self.wkday = int(self.wkday)
+	    if not 1 <= self.wkday <= 7:
 	      self.fuckyou()
 	      break
-	  except:
-	    self.fuckyou()
-	    break
-	  self.day.append(day)
-	  daylist = []
-	  for x in self.day: daylist.append(self.daydict[x])
-	  print "\n", daylist
-	  print "\nPick another day?"
-	  another = raw_input("Enter y or n\n> ")
-	  if another == 'y': continue
-	  else: pass
-	  set = raw_input("\nWhat hour would you like it to turn on? Enter 0-23\n> ")
-	  try:
+	    self.day.append(self.wkday)
+	    daylist = []
+	    for x in self.day: daylist.append(self.daydict[x])
+	    print "\n", daylist
+	    self.wkday = raw_input("\nEnter another day or just press enter\n> ")
+	    try:
+ 	      self.wkday = int(self.wkday)
+	    except: pass
+	    if 1 <= self.wkday <= 7: continue
+	    else: pass
+	    set = raw_input("\nWhat hour would you like it to turn on? Enter 0-23\n> ")
 	    set = int(set)
 	    if not 0 <= set <= 23:
 	      self.fuckyou()
 	      break
-	  except:
-	    self.fuckyou()
-	    break
-	  minute = raw_input("\nWhat minute would you like it to turn on? Enter 0-59\n> ")
-	  try:
+	    minute = raw_input("\nWhat minute would you like it to turn on? Enter 0-59\n> ")
 	    minute = int(minute)
 	    if not 0 <= minute <= 59:
 	      self.fuckyou()
@@ -148,19 +154,19 @@ class ShellMenu():
 	self.pump = read.pump
 	self.ontime = read.ontime
 	min = 'd'
+  	print "\nWhat zone would you like to turn on?"
+	self.pick = raw_input('Enter 1 through 7 > ')
 	while True:
-  	  print "\nWhat zone would you like to turn on?"
-	  pick = raw_input('Enter 1 through 7 > ')
 	  try:
-	    pick = int(pick)
-	    if not 1 <= pick <= 7:
+	    self.pick = int(self.pick)
+	    if not 1 <= self.pick <= 7:
 	      self.fuckyou()
 	      break
 	  except:
 	    self.fuckyou()
 	    break
 	  print "\nHow many minutes would you like it to come on for?"
-	  min = raw_input("Enter 1 though 90 > ")
+	  min = raw_input("Enter 1 though 90\n> ")
 	  try:
 	    min = int(min)
 	    if not 1 <= min <= 90:
@@ -169,12 +175,14 @@ class ShellMenu():
 	  except:
   	    self.fuckyou()
 	    break
-	  self.zones.append([pick,min])
+	  self.zones.append([self.pick,min])
 	  print "\n[[Zone, minutes]]: ", self.zones
-	  print "\nPick another zone?"
-	  query = raw_input('Enter y or n > ')
-	  if query == 'y': continue
-	  else: break
+	  self.pick = raw_input('\nEnter another zone number or just press enter\n> ')
+	  try:
+	    self.pick = int(self.pick)
+	    if 1 <= self.pick <= 7: continue
+	    else: break
+	  except: break
 	if isinstance(min, int): 
 	  if self.control == "Manual":
 	    self.control = "Start"
@@ -190,29 +198,33 @@ class ShellMenu():
 	write.ReadStatusJSON()
 	if write.control == "Auto":
 	  self.control = "Manual"
-	  write.ReadStatusJSON()
 	  self.pump = write.pump
 	  self.zones = write.zones
 	  self.ontime = write.ontime
+	if self.pump == True: 
+	  self.fuckyou()
+	else:
 	  write.WriteStatusJSON(self.control, self.pump, self.zones, self.ontime)
-	self.PickZones()
-	write.WriteStatusJSON(self.control, self.pump, self.zones, self.ontime)	
-	print "\nTurning sprinklers on..."
-	time.sleep(3)
+	  self.PickZones()
+	  write.WriteStatusJSON(self.control, self.pump, self.zones, self.ontime)	
+	if self.control == 'Start':
+	  print "\nTurning sprinklers on..."
+	  time.sleep(3)
+	else: pass
 
     def fuckyou(self):
 	os.system('clear')
 	print """
-		....................../´¯/) 
-		....................,/¯../ 
-		.................../..../ 
-		............./´¯/'...'/´¯¯`·¸ 
-		........../'/.../..../......./¨¯\ 
-		........('(...´...´.... ¯~/'...') 
-		.........\.................'...../ 
-		..........''...\.......... _.·´ 
-		............\..............( 
-		..............\.............\...   """
+		                      /´¯/) 
+		                    ,/¯../ 
+		                   /..../ 
+		             /´¯/'...'/´¯¯`·¸ 
+		          /'/.../..../......./¨¯\ 
+		        ('(...´...´.... ¯~/'...') 
+		         \.................'...../ 
+		          ''...\.......... _.·´ 
+		            \..............( 
+		              \.............\   """
 	time.sleep(2)
 	os.system('clear')
 
